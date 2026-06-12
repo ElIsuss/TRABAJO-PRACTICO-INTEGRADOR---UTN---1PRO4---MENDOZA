@@ -1,4 +1,4 @@
-package integrado.Prog2.enums;
+package integrado.prog2.enums;
 
 public enum Estado {
     PENDIENTE,

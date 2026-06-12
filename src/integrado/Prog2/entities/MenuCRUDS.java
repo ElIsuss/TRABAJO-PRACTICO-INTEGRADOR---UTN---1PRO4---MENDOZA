@@ -1,10 +1,21 @@
-package integrado.Prog2.entities;
+package integrado.prog2.entities;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class MenuCRUDS {
 
     private final Scanner sc = new Scanner(System.in);
+
+    private List<Categoria> categorias;
+    private List<Producto> productos;
+    private List<Usuario> usuarios;
+
+    public MenuCRUDS(List<Categoria> categorias, List<Producto> productos, List<Usuario> usuarios) {
+        this.categorias = categorias;
+        this.productos = productos;
+        this.usuarios = usuarios;
+    }
 
     public void mostrar(int modulo) {
 
@@ -63,11 +74,8 @@ public class MenuCRUDS {
             case 3:
                 return "USUARIOS";
 
-            case 4:
-                return "PEDIDOS";
-
             default:
-                return "DESCONOCIDO";
+                return "";
         }
     }
 
@@ -85,10 +93,6 @@ public class MenuCRUDS {
             case 3:
                 System.out.println("Listando usuarios...");
                 break;
-
-            case 4:
-                System.out.println("Listando pedidos...");
-                break;
         }
     }
 
@@ -100,15 +104,11 @@ public class MenuCRUDS {
                 break;
 
             case 2:
-                System.out.println("Creando producto...");
+                System.out.println("Creando producto...\"");
                 break;
 
             case 3:
                 System.out.println("Creando usuario...");
-                break;
-
-            case 4:
-                System.out.println("Creando pedido...");
                 break;
         }
     }
@@ -127,10 +127,6 @@ public class MenuCRUDS {
             case 3:
                 System.out.println("Editando usuario...");
                 break;
-
-            case 4:
-                System.out.println("Editando pedido...");
-                break;
         }
     }
 
@@ -147,10 +143,6 @@ public class MenuCRUDS {
 
             case 3:
                 System.out.println("Eliminando usuario...");
-                break;
-
-            case 4:
-                System.out.println("Eliminando pedido...");
                 break;
         }
     }
