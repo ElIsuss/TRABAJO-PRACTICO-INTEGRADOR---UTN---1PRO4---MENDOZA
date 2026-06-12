@@ -1,4 +1,4 @@
-package integrado.Prog2.entities;
+package integrado.prog2.entities;
 
 import java.time.LocalDateTime;
 

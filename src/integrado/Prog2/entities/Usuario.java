@@ -1,7 +1,6 @@
-package integrado.Prog2.entities;
+package integrado.prog2.entities;
 
-import integrado.Prog2.enums.FormaPago;
-import integrado.Prog2.enums.Rol;
+import integrado.prog2.enums.Rol;
 
 import java.util.ArrayList;
 import java.util.List;
