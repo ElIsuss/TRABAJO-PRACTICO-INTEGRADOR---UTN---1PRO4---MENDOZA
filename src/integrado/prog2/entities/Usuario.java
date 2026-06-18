@@ -5,14 +5,14 @@ import integrado.prog2.enums.Rol;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Usuario extends Base{
+public class Usuario extends integrado.prog2.entities.Base {
     private String nombre;
     private String apellido;
     private String mail;
     private String celular;
     private String contrasenia;
     private Rol rol;
-    private List<Pedido>pedidos = new ArrayList<>();
+    private List<integrado.prog2.entities.Pedido>pedidos = new ArrayList<>();
 
     public Usuario (String nombre, String apellido, String mail, String celular, String contrasenia, Rol rol){
         super();
@@ -26,13 +26,13 @@ public class Usuario extends Base{
 
 
     //METODOS
-    public void addPedido(Pedido pedido){
+    public void addPedido(integrado.prog2.entities.Pedido pedido){
         pedidos.add(pedido);
     }
 
-    public Pedido findPedidoById(Long id){
+    public integrado.prog2.entities.Pedido findPedidoById(Long id){
 
-        for(Pedido pedido : pedidos){
+        for(integrado.prog2.entities.Pedido pedido : pedidos){
 
             if(pedido.getId().equals(id)){
                 return pedido;
@@ -45,7 +45,7 @@ public class Usuario extends Base{
 
     public void deletePedidoById(Long id){
 
-        Pedido pedido = findPedidoById(id);
+        integrado.prog2.entities.Pedido pedido = findPedidoById(id);
 
         if(pedido != null){
             pedidos.remove(pedido);
@@ -105,7 +105,7 @@ public class Usuario extends Base{
         return rol;
     }
 
-    public List<Pedido> getPedidos() {
+    public List<integrado.prog2.entities.Pedido> getPedidos() {
         return pedidos;
     }
 }

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Categoria extends Base {
+public class Categoria extends integrado.prog2.entities.Base {
     private String nombre;
     private String descipcion;
-    private List<Producto> productos = new ArrayList<>();
+    private List<integrado.prog2.entities.Producto> productos = new ArrayList<>();
 
     public Categoria (String nombre, String descipcion){
         super();
@@ -15,7 +15,7 @@ public class Categoria extends Base {
         setDescipcion(descipcion);
     }
 
-    public void addProducto(Producto p){
+    public void addProducto(integrado.prog2.entities.Producto p){
         productos.add(p);
     }
 
@@ -51,7 +51,7 @@ public class Categoria extends Base {
         return descipcion;
     }
 
-    public List<Producto> getProducto() {
+    public List<integrado.prog2.entities.Producto> getProducto() {
         return productos;
     }
 

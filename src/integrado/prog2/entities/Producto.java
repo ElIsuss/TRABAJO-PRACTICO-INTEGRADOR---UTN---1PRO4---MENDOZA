@@ -2,14 +2,14 @@ package integrado.prog2.entities;
 
 import java.util.Objects;
 
-public class Producto extends Base {
+public class Producto extends integrado.prog2.entities.Base {
     private String nombre;
     private Double precio;
     private String descipcion;
     private Integer stock;
     private String imagen;
     private Boolean disponible;
-    private Categoria categoria;
+    private integrado.prog2.entities.Categoria categoria;
 
     public Producto (String nombre, Double precio,String descipcion, Integer stock, String imagen, Categoria categoria){
         super();

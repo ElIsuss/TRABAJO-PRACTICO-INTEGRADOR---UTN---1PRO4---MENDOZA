@@ -2,6 +2,7 @@ package integrado.prog2.entities;
 
 import integrado.prog2.enums.Estado;
 import integrado.prog2.enums.FormaPago;
+import integrado.prog2.interfaces.Calculable;
 
 
 import java.time.LocalDate;
@@ -16,7 +17,7 @@ import java.util.List;
 
 
 
-public class Pedido extends Base {
+public class Pedido extends Base implements Calculable {
     private LocalDate fecha;
     private Estado estado;
     private Double total;
@@ -58,6 +59,7 @@ public class Pedido extends Base {
         }
     }
 
+    @Override
     public void calcularTotal(){
         Double aux = 0.0;
         for (DetallePedido detallePedidoAux: detallePedidos){
@@ -69,7 +71,7 @@ public class Pedido extends Base {
     public void validarPedido(){
         if (detallePedidos.isEmpty()){
             setEstado(Estado.CANCELADO);         ////////////REVISAR
-            setTotal(0.0);
+            setTotal(0.0);                          ///Creo que cuando se crea debe ser PENDIENTE
         } else {
             setEstado(Estado.PENDIENTE);        ///////////////REVISAR
             calcularTotal();
@@ -95,7 +97,7 @@ public class Pedido extends Base {
         if(detalle != null){
             detallePedidos.remove(detalle);
             validarPedido();
-            calcularTotal();
+            //calcularTotal();  creo que no hace falta ya que validar pedido llama a calcularTotal
         }else{
             System.out.println("No existe un detalle para ese producto");
         }
@@ -163,10 +165,6 @@ public class Pedido extends Base {
 
     public FormaPago getFormaPago() {
         return formaPago;
-    }
-
-    public List<DetallePedido> getDetallesPedidos() {
-        return detallePedidos;
     }
 
     public List<DetallePedido> getDetallesPedido() {

@@ -10,7 +10,6 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-
         List<Categoria> listaCategorias = new ArrayList<>();
         List<Producto> listaProductos = new ArrayList<>();
         List<Usuario> listaUsuarios = new ArrayList<>();
