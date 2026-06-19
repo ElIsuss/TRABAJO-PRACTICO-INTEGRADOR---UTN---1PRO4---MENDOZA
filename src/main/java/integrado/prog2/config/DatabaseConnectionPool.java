@@ -15,7 +15,7 @@ public class DatabaseConnectionPool {
             HikariConfig config = new HikariConfig();
             config.setJdbcUrl("jdbc:mysql://localhost:3306/food_store_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true");
             config.setUsername("root");
-            config.setPassword("");
+            config.setPassword("1234567");
             config.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
             
