@@ -1,9 +1,11 @@
 package integrado.prog2.entities;
 
+import integrado.prog2.exception.ValidationException;
+
 import java.util.Objects;
 
 
-//FALTA EL TO STRING
+
 
 
 public class DetallePedido extends Base {
@@ -43,7 +45,10 @@ public class DetallePedido extends Base {
     }
 
     //SETTERS
-    public void setCantidad(Integer cantidad) {                         //CONSULTAR
+    public void setCantidad(Integer cantidad) throws ValidationException {
+        if (cantidad == null || cantidad <= 0){
+            throw new ValidationException("La cantidad debe ser mayor a 0");       //CONSULTAR
+        }
         this.cantidad = cantidad;
     }
 
