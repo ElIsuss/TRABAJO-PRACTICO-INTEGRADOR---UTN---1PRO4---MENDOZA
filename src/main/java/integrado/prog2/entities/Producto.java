@@ -1,5 +1,4 @@
 package integrado.prog2.entities;
-
 import java.util.Objects;
 
 public class Producto extends Base {
@@ -41,13 +40,13 @@ public class Producto extends Base {
         validarDisponibilidad();
     }
 
-    public Boolean validarVenta(Integer venta){
+    public Boolean validarVenta(Integer venta) {
 
-        if(venta == null || venta <= 0){
+        if (venta == null || venta <= 0) {
             return false;
         }
 
-        if(stock >= venta){
+        if (stock >= venta) {
             reducirStock(venta);
             return true;
         }
@@ -56,7 +55,7 @@ public class Producto extends Base {
     }
 
 
-    //SETTERS
+        //SETTERS
 
     public void setId(Long id) {
         this.id = id; // Como ahora el Id de Base es protected, Producto lo puede modificar directamente así
