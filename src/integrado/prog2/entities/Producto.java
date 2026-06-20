@@ -1,5 +1,8 @@
 package integrado.prog2.entities;
 
+import integrado.prog2.exception.StockInsuficienteException;
+import integrado.prog2.exception.ValidationException;
+
 import java.util.Objects;
 
 public class Producto extends integrado.prog2.entities.Base {
@@ -41,18 +44,15 @@ public class Producto extends integrado.prog2.entities.Base {
         validarDisponibilidad();
     }
 
-    public Boolean validarVenta(Integer venta){
+    public boolean validarVenta(Integer cantidad)
+            throws StockInsuficienteException {
 
-        if(venta == null || venta <= 0){
-            return false;
+        if (cantidad > stock) {
+            throw new StockInsuficienteException(
+                    "Stock insuficiente para el producto " + nombre);
         }
 
-        if(stock >= venta){
-            reducirStock(venta);
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
 
@@ -66,13 +66,11 @@ public class Producto extends integrado.prog2.entities.Base {
         }
     }
 
-    public void setPrecio(Double precio) {                                 //CONSULTAR
-        if (precio != null && precio > 0) {
-            this.precio = precio;
-        } else {
-            System.out.println("PRECIO INVALIDO");
-            this.precio = 0.0;
+    public void setPrecio(Double precio) throws ValidationException {
+        if (precio == null || precio < 0) {
+            throw new ValidationException("El precio no puede ser negativo");
         }
+        this.precio = precio;
     }
 
     public void setDescipcion(String descipcion) {                       //CONSULTAR

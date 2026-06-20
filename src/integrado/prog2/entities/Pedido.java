@@ -2,6 +2,8 @@ package integrado.prog2.entities;
 
 import integrado.prog2.enums.Estado;
 import integrado.prog2.enums.FormaPago;
+import integrado.prog2.exception.EntityNotFoundException;
+import integrado.prog2.exception.PedidoInvalidoException;
 import integrado.prog2.interfaces.Calculable;
 
 
@@ -68,17 +70,17 @@ public class Pedido extends Base implements Calculable {
         setTotal(aux);
     }
 
-    public void validarPedido(){
+    public void validarPedido() {
         if (detallePedidos.isEmpty()){
             setEstado(Estado.CANCELADO);         ////////////REVISAR
-            setTotal(0.0);                          ///Creo que cuando se crea debe ser PENDIENTE
+            setTotal(0.0);
         } else {
             setEstado(Estado.PENDIENTE);        ///////////////REVISAR
             calcularTotal();
         }
     }
 
-    public DetallePedido findDetallePedidoByProducto(Producto producto){
+    public DetallePedido findDetallePedidoByProducto(Producto producto) throws EntityNotFoundException {
 
         for(DetallePedido detalle : detallePedidos){
 
@@ -86,7 +88,7 @@ public class Pedido extends Base implements Calculable {
                 return detalle;
             }
         }
-        return null;
+        throw new EntityNotFoundException("No existe un detalle para el producto");
     }
 
 

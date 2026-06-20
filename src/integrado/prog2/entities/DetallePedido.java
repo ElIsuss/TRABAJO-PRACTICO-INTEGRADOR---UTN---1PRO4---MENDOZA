@@ -1,5 +1,8 @@
 package integrado.prog2.entities;
 
+import integrado.prog2.exception.StockInsuficienteException;
+import integrado.prog2.exception.ValidationException;
+
 import java.util.Objects;
 
 
@@ -28,22 +31,22 @@ public class DetallePedido extends Base {
     }
 
     private void validar(Producto producto) {
-        if (producto != null){
-            if (producto.validarVenta(cantidad)) {
-                setValido(true);
-                calcularSubtotal();
-            } else {
-                setValido(false);
-                System.out.println("LA VENTA QUE INTENTA HACER ES INVALIDA, POR FALTA DE STOCK O PRODUCTO FALSO");
-            }
+        if (producto.validarVenta(cantidad)) {
+            setValido(true);
+            calcularSubtotal();
         } else {
-            System.out.println("NO SE ECONTRO PRODUCTO");
+            throw new StockInsuficienteException(
+                    "Stock insuficiente para " + producto.getNombre()
+            );
         }
 
     }
 
     //SETTERS
-    public void setCantidad(Integer cantidad) {                         //CONSULTAR
+    public void setCantidad(Integer cantidad) throws ValidationException {
+        if (cantidad == null || cantidad <= 0) {
+            throw new ValidationException("La cantidad debe ser mayor a cero");
+        }
         this.cantidad = cantidad;
     }
 
