@@ -1,9 +1,9 @@
 package integrado.prog2.entities;
 
-import integrado.prog2.dao.*;
 import integrado.prog2.enums.Estado;
 import integrado.prog2.enums.FormaPago;
 import integrado.prog2.enums.Rol;
+import integrado.prog2.service.*;
 
 import java.util.List;
 import java.util.Scanner;
@@ -11,11 +11,56 @@ import java.util.Scanner;
 public class MenuCRUDS {
 
     private final Scanner sc = new Scanner(System.in);
+    
+    private final CategoriaService categoriaService = new CategoriaServiceImpl();
+    private final ProductoService productoService = new ProductoServiceImpl();
+    private final UsuarioService usuarioService = new UsuarioServiceImpl();
+    private final PedidoService pedidoService = new PedidoServiceImpl();
 
-    private final CategoriaDAO categoriaDAO = new CategoriaDAOImpl();
-    private final ProductoDAO productoDAO = new ProductoDAOImpl();
-    private final UsuarioDAO usuarioDAO = new UsuarioDAOImpl();
-    private final PedidoDAO pedidoDAO = new PedidoDAOImpl();
+    // === METODOS AUXILIARES ===
+    private String leerString(String mensaje) {
+        System.out.print(mensaje);
+        return sc.nextLine().trim();
+    }
+
+    private int leerInt(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                return Integer.parseInt(sc.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("ERROR: Debe ingresar un número entero válido.");
+            }
+        }
+    }
+
+    private long leerLong(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                return Long.parseLong(sc.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("ERROR:Debe ingresar un número válido.");
+            }
+        }
+    }
+
+    private double leerDouble(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                return Double.parseDouble(sc.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("ERROR:Debe ingresar un número decimal válido.");
+            }
+        }
+    }
+
+    private boolean confirmar(String mensaje) {
+        System.out.print(mensaje + " (S/N): ");
+        String resp = sc.nextLine().trim().toUpperCase();
+        return resp.equals("S") || resp.equals("SI");
+    }
 
     //LE ASIGBAMOS CON LO QUE VAMOS A TRABAJAR
     private String obtenerNombreModulo(int modulo) {
@@ -30,9 +75,7 @@ public class MenuCRUDS {
 
     //MENU PARA MOSTRAR LOS TRABAJOS QUE VAMOS A HACER
     public void mostrar(int modulo) {
-
         int opcion;
-
         do {
             System.out.println("\n=== " + obtenerNombreModulo(modulo) + " ===");
             System.out.println("1. Listar");
@@ -40,12 +83,9 @@ public class MenuCRUDS {
             System.out.println("3. Editar");
             System.out.println("4. Eliminar");
             System.out.println("0. Volver");
-            System.out.print("Seleccione: ");
-
-            opcion = Integer.parseInt(sc.nextLine());
+            opcion = leerInt("Seleccione: ");
 
             switch (opcion) {
-
                 case 1 -> listar(modulo);
                 case 2 -> crear(modulo);
                 case 3 -> editar(modulo);
@@ -53,46 +93,58 @@ public class MenuCRUDS {
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
-
         } while (opcion != 0);
     }
 
-
-    // ===LISTAR===
+    // === LISTAR ===
     private void listar(int modulo) {
-
         switch (modulo) {
-
             case 1 -> {
-                System.out.println("\n--- CATEGORÍAS ---");
-                for (Categoria c : categoriaDAO.listar()) {
-                    System.out.println( c.getId() + " - " + c.getNombre());
+                System.out.println("\n--- LISTA DE CATEGORÍAS ---");
+                List<Categoria> categorias = categoriaService.listarTodos();
+                if (categorias.isEmpty()) {
+                    System.out.println("No hay categorías registradas.");
+                } else {
+                    for (Categoria c : categorias) {
+                        System.out.printf("ID: %d | Nombre: %s | Descripción: %s%n",
+                                c.getId(), c.getNombre(), c.getDescripcion());
+                    }
                 }
             }
-
             case 2 -> {
-                System.out.println("\n--- PRODUCTOS ---");
-                for (Producto p : productoDAO.listar()) {
-                    System.out.println(p.getId() + " - " + p.getNombre() + " - $" + p.getPrecio());
+                System.out.println("\n--- LISTA DE PRODUCTOS ---");
+                List<Producto> productos = productoService.listarTodos();
+                if (productos.isEmpty()) {
+                    System.out.println("No hay productos registrados.");
+                } else {
+                    for (Producto p : productos) {
+                        System.out.printf("ID: %d | %s | $%.2f | Stock: %d | Categoría: %s%n",
+                                p.getId(), p.getNombre(), p.getPrecio(),
+                                p.getStock(), p.getCategoria().getNombre());
+                    }
                 }
             }
-
             case 3 -> {
-                System.out.println("\n--- USUARIOS ---");
-                for (Usuario u : usuarioDAO.listar()) {
-                    System.out.println(u.getId() + " - " + u.getNombre() + " " + u.getApellido());
+                System.out.println("\n--- LISTA DE USUARIOS ---");
+                List<Usuario> usuarios = usuarioService.listarTodos();
+                if (usuarios.isEmpty()) {
+                    System.out.println("No hay usuarios registrados.");
+                } else {
+                    for (Usuario u : usuarios) {
+                        System.out.printf("ID: %d | %s %s | Mail: %s | Rol: %s%n",
+                                u.getId(), u.getNombre(), u.getApellido(),
+                                u.getMail(), u.getRol());
+                    }
                 }
             }
             case 4 -> {
-                System.out.println("\n--- PEDIDOS ---");
-
-                List<Pedido> pedidos = pedidoDAO.listarTodos();
-
+                System.out.println("\n--- LISTA DE PEDIDOS ---");
+                List<Pedido> pedidos = pedidoService.listarTodos();
                 if (pedidos.isEmpty()) {
                     System.out.println("No hay pedidos registrados.");
                 } else {
-                    for (Pedido pedido : pedidos) {
-                        System.out.println(pedido);
+                    for (Pedido p : pedidos) {
+                        System.out.println(p);
                         System.out.println("--------------------------------");
                     }
                 }
@@ -100,93 +152,50 @@ public class MenuCRUDS {
         }
     }
 
-    // ==== CREAR ===
+    // === CREAR ===
     private void crear(int modulo) {
-
         switch (modulo) {
-
             case 1 -> {
                 System.out.println("\n--- CREAR CATEGORÍA ---");
+                String nombre = leerString("Nombre: ");
+                String descripcion = leerString("Descripción: ");
 
-                //ponemos nombre y descripcion
-                System.out.print("Nombre: ");
-                String nombre = sc.nextLine();
-
-                System.out.print("Descripción: ");
-                String descripcion = sc.nextLine();
-
-                //creamos categoria
-                Categoria c = new Categoria(nombre,descripcion);
-
-                categoriaDAO.crear(c);
-
-                System.out.println("Categoría creada con ID: " + c.getId());
+                Categoria c = new Categoria(nombre, descripcion);
+                try {
+                    categoriaService.guardarCategoria(c);
+                    System.out.println("✅ Categoría creada con ID: " + c.getId());
+                } catch (RuntimeException e) {
+                    System.out.println("❌ Error: " + e.getMessage());
+                }
             }
-
             case 2 -> {
                 System.out.println("\n--- CREAR PRODUCTO ---");
+                String nombre = leerString("Nombre: ");
+                double precio = leerDouble("Precio: ");
+                String descripcion = leerString("Descripción: ");
+                int stock = leerInt("Stock: ");
+                String imagen = leerString("Imagen: ");
+                long idCat = leerLong("ID de categoría: ");
 
-
-                //ponemos los valores
-                System.out.print("Nombre: ");
-                String nombre = sc.nextLine();
-
-                System.out.print("Precio: ");
-                double precio = Double.parseDouble(sc.nextLine());
-
-                System.out.print("Descripción: ");
-                String descripcion = sc.nextLine();
-
-                System.out.print("Stock: ");
-                int stock = Integer.parseInt(sc.nextLine());
-
-                System.out.print("Imagen: ");
-                String imagen = sc.next();
-
-                System.out.print("ID de categoría: ");
-                Long idCat = Long.parseLong(sc.nextLine());
-
-                Categoria categoria = categoriaDAO.leer(idCat);
-
-                //si la categoria no existe no creamos el producto para evitar errores
-                if (categoria == null) {
-                    System.out.println("Categoría no existe");
-                    return;
+                try {
+                    Categoria categoria = categoriaService.buscarPorId(idCat);
+                    Producto p = new Producto(nombre, precio, descripcion, stock, imagen, categoria);
+                    productoService.guardarProducto(p);
+                    System.out.println("✅ Producto creado con ID: " + p.getId());
+                } catch (RuntimeException e) {
+                    System.out.println("❌ Error: " + e.getMessage());
                 }
-
-                Producto p = new Producto(nombre, precio, descripcion, stock, imagen, categoria);
-
-                productoDAO.crear(p);
-
-                System.out.println("Producto creado con ID: " + p.getId());
             }
-
             case 3 -> {
                 System.out.println("\n--- CREAR USUARIO ---");
-
-
-                //parametros
-                System.out.print("Nombre: ");
-                String nombre = sc.nextLine();
-
-                System.out.print("Apellido: ");
-                String apellido = sc.nextLine();
-
-                System.out.print("Email: ");
-                String mail = sc.nextLine();
-
-                System.out.print("Celular: ");
-                String celular = sc.next();
-
-                System.out.print("Contraseña: ");
-                String pass = sc.next();
-
-                System.out.print("Rol (ADMIN / USUARIO): ");
-                String rolStr = sc.nextLine();
+                String nombre = leerString("Nombre: ");
+                String apellido = leerString("Apellido: ");
+                String mail = leerString("Email: ");
+                String celular = leerString("Celular: ");
+                String pass = leerString("Contraseña: ");
+                String rolStr = leerString("Rol (ADMIN / USUARIO): ");
 
                 Rol rol;
-
-                //si el rol es inavlido no creamos el usuario
                 try {
                     rol = Rol.valueOf(rolStr.toUpperCase());
                 } catch (IllegalArgumentException e) {
@@ -195,185 +204,235 @@ public class MenuCRUDS {
                 }
 
                 Usuario u = new Usuario(nombre, apellido, mail, celular, pass, rol);
-
-                usuarioDAO.crear(u);
-
-                System.out.println("Usuario creado con ID: " + u.getId());
+                try {
+                    usuarioService.registrarUsuario(u);
+                    System.out.println("✅ Usuario creado con ID: " + u.getId());
+                } catch (RuntimeException e) {
+                    System.out.println("❌ Error: " + e.getMessage());
+                }
             }
-
             case 4 -> {
                 System.out.println("\n--- CREAR PEDIDO ---");
-
-                System.out.print("ID Usuario: ");
-                Long idUsuario = sc.nextLong();
-
-                Usuario usuario = usuarioDAO.leer(idUsuario);
-
-                if (usuario == null) {
-                    System.out.println("Usuario no encontrado.");
-                    return;
-                }
-
-                System.out.print("Forma de pago (EFECTIVO / TARJETA / TRANSFERENCIA): ");
-                String formaPagoStr = sc.nextLine();
-
-                FormaPago formaPago;
+                long idUsuario = leerLong("ID Usuario: ");
 
                 try {
-                    formaPago = FormaPago.valueOf(formaPagoStr.toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    System.out.println("Forma de pago inválida.");
-                    return;
-                }
+                    Usuario usuario = usuarioService.buscarPorId(idUsuario);
 
-                Pedido pedido = new Pedido(formaPago, usuario);
-
-                // =========================
-                // AGREGAR PRODUCTOS AL PEDIDO
-                // =========================
-
-                while (true) {
-
-                    System.out.print("\nID Producto (0 para terminar): ");
-                    Long idProducto = Long.parseLong(sc.nextLine());
-
-                    if (idProducto == 0) break;
-
-                    Producto producto = productoDAO.leer(idProducto);
-
-                    if (producto == null) {
-                        System.out.println("Producto no encontrado.");
-                        continue;
-                    }
-
-                    System.out.print("Cantidad: ");
-                    int cantidad = Integer.parseInt(sc.nextLine());
-
+                    String formaPagoStr = leerString("Forma de pago (EFECTIVO / TARJETA / TRANSFERENCIA): ");
+                    FormaPago formaPago;
                     try {
-                        pedido.addDetallePedido(cantidad, producto);
-                        System.out.println("Producto agregado al pedido.");
-                    } catch (Exception e) {
-                        System.out.println("Error al agregar producto: " + e.getMessage());
+                        formaPago = FormaPago.valueOf(formaPagoStr.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("❌ Forma de pago inválida.");
+                        return;
                     }
+
+                    Pedido pedido = new Pedido(formaPago, usuario);
+
+                    // Agregar productos al pedido
+                    while (true) {
+                        long idProducto = leerLong("ID Producto (0 para terminar): ");
+                        if (idProducto == 0) break;
+
+                        try {
+                            Producto producto = productoService.buscarPorId(idProducto);
+                            int cantidad = leerInt("Cantidad: ");
+                            pedido.addDetallePedido(cantidad, producto);
+                            System.out.println("✅ Producto agregado al pedido.");
+                        } catch (RuntimeException e) {
+                            System.out.println("❌ Error: " + e.getMessage());
+                        }
+                    }
+
+                    // Guardar pedido con transacción
+                    pedidoService.procesarPedido(pedido);
+                    System.out.println("✅ Pedido creado con ID: " + pedido.getId());
+
+                } catch (RuntimeException e) {
+                    System.out.println("❌ Error: " + e.getMessage());
                 }
-
-                // =========================
-                // GUARDAR PEDIDO
-                // =========================
-
-                pedidoDAO.crear(pedido);
-
-                System.out.println("Pedido creado con ID: " + pedido.getId());
             }
         }
     }
 
-    // ==== EDITAR ====
+    // === EDITAR ===
     private void editar(int modulo) {
-
         switch (modulo) {
-
             case 1 -> {
-                System.out.print("ID categoría: ");
-                Long id = Long.parseLong(sc.nextLine());
+                long id = leerLong("ID categoría: ");
+                try {
+                    Categoria c = categoriaService.buscarPorId(id);
+                    System.out.println("Datos actuales: " + c.getNombre() + " | " + c.getDescripcion());
 
-                Categoria c = categoriaDAO.leer(id);
+                    String nuevoNombre = leerString("Nuevo nombre (Enter para mantener): ");
+                    String nuevaDesc = leerString("Nueva descripción (Enter para mantener): ");
 
-                if (c != null) {
-                    System.out.print("Nuevo nombre: ");
-                    c.setNombre(sc.next());
+                    if (!nuevoNombre.isEmpty()) c.setNombre(nuevoNombre);
+                    if (!nuevaDesc.isEmpty()) c.setDescripcion(nuevaDesc);
 
-                    System.out.print("Nueva descripción: ");
-                    c.setDescripcion(sc.next());
-
-                    categoriaDAO.actualizar(c);
-                    System.out.println("Actualizada.");
-                } else {
-                    System.out.println("No existe.");
+                    categoriaService.modificarCategoria(c);
+                    System.out.println("✅ Categoría actualizada.");
+                } catch (RuntimeException e) {
+                    System.out.println("❌ Error: " + e.getMessage());
                 }
             }
-
             case 2 -> {
-                System.out.print("ID producto: ");
-                Long id = Long.parseLong(sc.nextLine());
+                long id = leerLong("ID producto: ");
+                try {
+                    Producto p = productoService.buscarPorId(id);
+                    System.out.println("Datos actuales:");
+                    System.out.println("  Nombre: " + p.getNombre());
+                    System.out.println("  Precio: $" + p.getPrecio());
+                    System.out.println("  Descripción: " + p.getDescripcion());
+                    System.out.println("  Stock: " + p.getStock());
+                    System.out.println("  Imagen: " + p.getImagen());
+                    System.out.println("  Categoría ID: " + p.getCategoria().getId());
 
-                Producto p = productoDAO.leer(id);
+                    String nuevoNombre = leerString("Nuevo nombre (Enter para mantener): ");
+                    if (!nuevoNombre.isEmpty()) p.setNombre(nuevoNombre);
 
-                if (p != null) {
-                    System.out.print("Nuevo nombre: ");
-                    p.setNombre(sc.next());
+                    double nuevoPrecio = leerDouble("Nuevo precio (0 para mantener): ");
+                    if (nuevoPrecio > 0) p.setPrecio(nuevoPrecio);
 
-                    System.out.print("Nuevo precio: ");
-                    p.setPrecio(sc.nextDouble());
+                    String nuevaDesc = leerString("Nueva descripción (Enter para mantener): ");
+                    if (!nuevaDesc.isEmpty()) p.setDescripcion(nuevaDesc);
 
-                    productoDAO.actualizar(p);
-                    System.out.println("Actualizado.");
-                } else {
-                    System.out.println("No existe.");
+                    int nuevoStock = leerInt("Nuevo stock (-1 para mantener): ");
+                    if (nuevoStock >= 0) p.setStock(nuevoStock);
+
+                    String nuevaImagen = leerString("Nueva imagen (Enter para mantener): ");
+                    if (!nuevaImagen.isEmpty()) p.setImagen(nuevaImagen);
+
+                    long nuevaCategoria = leerLong("Nuevo ID de categoría (0 para mantener): ");
+                    if (nuevaCategoria > 0) {
+                        Categoria cat = categoriaService.buscarPorId(nuevaCategoria);
+                        p.setCategoria(cat);
+                    }
+
+                    productoService.modificarProducto(p);
+                    System.out.println("✅ Producto actualizado.");
+                } catch (RuntimeException e) {
+                    System.out.println("❌ Error: " + e.getMessage());
                 }
             }
-
             case 3 -> {
-                System.out.print("ID usuario: ");
-                Long id = Long.parseLong(sc.nextLine());
+                long id = leerLong("ID usuario: ");
+                try {
+                    Usuario u = usuarioService.buscarPorId(id);
+                    System.out.println("Datos actuales:");
+                    System.out.println("  Nombre: " + u.getNombre());
+                    System.out.println("  Apellido: " + u.getApellido());
+                    System.out.println("  Mail: " + u.getMail());
+                    System.out.println("  Celular: " + u.getCelular());
+                    System.out.println("  Rol: " + u.getRol());
 
-                Usuario u = usuarioDAO.leer(id);
+                    String nuevoNombre = leerString("Nuevo nombre (Enter para mantener): ");
+                    if (!nuevoNombre.isEmpty()) u.setNombre(nuevoNombre);
 
-                if (u != null) {
-                    System.out.print("Nuevo nombre: ");
-                    u.setNombre(sc.next());
+                    String nuevoApellido = leerString("Nuevo apellido (Enter para mantener): ");
+                    if (!nuevoApellido.isEmpty()) u.setApellido(nuevoApellido);
 
-                    System.out.print("Nuevo apellido: ");
-                    u.setApellido(sc.next());
+                    String nuevoMail = leerString("Nuevo mail (Enter para mantener): ");
+                    if (!nuevoMail.isEmpty()) u.setMail(nuevoMail);
 
-                    usuarioDAO.actualizar(u);
-                    System.out.println("Actualizado.");
-                } else {
-                    System.out.println("No existe.");
+                    String nuevoCelular = leerString("Nuevo celular (Enter para mantener): ");
+                    if (!nuevoCelular.isEmpty()) u.setCelular(nuevoCelular);
+
+                    String nuevaPass = leerString("Nueva contraseña (Enter para mantener): ");
+                    if (!nuevaPass.isEmpty()) u.setContrasenia(nuevaPass);
+
+                    String nuevoRol = leerString("Nuevo rol (ADMIN/USUARIO, Enter para mantener): ");
+                    if (!nuevoRol.isEmpty()) {
+                        try {
+                            u.setRol(Rol.valueOf(nuevoRol.toUpperCase()));
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("Rol inválido, se mantiene el anterior.");
+                        }
+                    }
+
+                    usuarioService.modificarUsuario(u);
+                    System.out.println("✅ Usuario actualizado.");
+                } catch (RuntimeException e) {
+                    System.out.println("❌ Error: " + e.getMessage());
                 }
             }
-
             case 4 -> {
-                System.out.print("ID pedido: ");
-                Long id = Long.parseLong(sc.nextLine());
+                long id = leerLong("ID pedido: ");
+                try {
+                    Pedido pedido = pedidoService.buscarPorId(id);
+                    System.out.println("Datos actuales:");
+                    System.out.println("  Estado: " + pedido.getEstado());
+                    System.out.println("  Forma de pago: " + pedido.getFormaPago());
 
-                Pedido pedido = pedidoDAO.leer(id);
+                    String nuevoEstadoStr = leerString("Nuevo estado (PENDIENTE/CONFIRMADO/TERMINADO/CANCELADO, Enter para mantener): ");
+                    if (!nuevoEstadoStr.isEmpty()) {
+                        try {
+                            pedido.setEstado(Estado.valueOf(nuevoEstadoStr.toUpperCase()));
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("Estado inválido, se mantiene el anterior.");
+                        }
+                    }
 
-                if (pedido == null) {
-                    System.out.println("Pedido no encontrado.");
-                    return;
+                    String nuevaFormaPagoStr = leerString("Nueva forma de pago (EFECTIVO/TARJETA/TRANSFERENCIA, Enter para mantener): ");
+                    if (!nuevaFormaPagoStr.isEmpty()) {
+                        try {
+                            pedido.setFormaPago(FormaPago.valueOf(nuevaFormaPagoStr.toUpperCase()));
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("Forma de pago inválida, se mantiene la anterior.");
+                        }
+                    }
+
+                    pedidoService.cambiarEstadoFormaPago(pedido);
+                    System.out.println("✅ Pedido actualizado.");
+                } catch (RuntimeException e) {
+                    System.out.println("❌ Error: " + e.getMessage());
                 }
-
-                System.out.print("Nuevo estado (PENDIENTE / CONFIRMADO / TERMINADO / CANCELADO): ");
-                Estado estado = Estado.valueOf(sc.next().toUpperCase());
-
-                System.out.print("Nueva forma de pago (EFECTIVO / TARJETA / TRANSFERENCIA): ");
-                FormaPago formaPago = FormaPago.valueOf(sc.next().toUpperCase());
-
-                pedido.setEstado(estado);
-                pedido.setFormaPago(formaPago);
-
-                pedidoDAO.actualizarEstadoFormaPago(pedido);
-
-                System.out.println("Pedido actualizado.");
             }
         }
     }
 
-    // ==== ELIMINAR ====
+    // === ELIMINAR ===
     private void eliminar(int modulo) {
+        long id = leerLong("ID a eliminar: ");
 
-        System.out.print("ID a eliminar: ");
-        Long id = Long.parseLong(sc.nextLine());
-
-        switch (modulo) {
-
-            case 1 -> categoriaDAO.eliminar(id);
-            case 2 -> productoDAO.eliminar(id);
-            case 3 -> usuarioDAO.eliminar(id);
-            case 4 -> pedidoDAO.eliminar(id);
+        if (!confirmar("¿Está seguro de eliminar este registro?")) {
+            System.out.println("Operación cancelada.");
+            return;
         }
 
-        System.out.println("Eliminación realizada.");
+        switch (modulo) {
+            case 1 -> {
+                try {
+                    categoriaService.darDeBaja(id);
+                    System.out.println("✅ Categoría eliminada lógicamente.");
+                } catch (RuntimeException e) {
+                    System.out.println("❌ Error: " + e.getMessage());
+                }
+            }
+            case 2 -> {
+                try {
+                    productoService.darDeBaja(id);
+                    System.out.println("✅ Producto eliminado lógicamente.");
+                } catch (RuntimeException e) {
+                    System.out.println("❌ Error: " + e.getMessage());
+                }
+            }
+            case 3 -> {
+                try {
+                    usuarioService.darDeBaja(id);
+                    System.out.println("✅ Usuario eliminado lógicamente.");
+                } catch (RuntimeException e) {
+                    System.out.println("❌ Error: " + e.getMessage());
+                }
+            }
+            case 4 -> {
+                try {
+                    pedidoService.cancelarPedido(id);
+                    System.out.println("✅ Pedido eliminado lógicamente.");
+                } catch (RuntimeException e) {
+                    System.out.println("❌ Error: " + e.getMessage());
+                }
+            }
+        }
     }
 }
