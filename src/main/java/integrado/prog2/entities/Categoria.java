@@ -25,27 +25,16 @@ public class Categoria extends Base {
 
 
     //SETTERS
-    public void setNombre(String nombre) {                                //CONSULTAR
-        if (nombre != null && !nombre.trim().isEmpty()){
-            this.nombre = nombre;
-        } else {
-            System.out.println("NO SE PUDO DEFINIR NOMBRE...");
-            this.nombre = "NOMBRE DE CATEGORIA INVALIDO";
-        }
-
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setDescripcion(String descripcion) {                             //CONSULTAR
-        if (descripcion != null && !descripcion.trim().isEmpty()){
-            this.descripcion = descripcion;
-        } else {
-            System.out.println("NO SE PUDO DEFINIR DESCRIPCION...");
-            this.descripcion = "DESCIPCION DE CATEGORIA INVALIDA";
-        }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
     
     //GETTERS

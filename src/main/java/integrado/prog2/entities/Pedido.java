@@ -2,19 +2,9 @@ package integrado.prog2.entities;
 
 import integrado.prog2.enums.Estado;
 import integrado.prog2.enums.FormaPago;
-
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-
-
-
-//MEJORAR EL TO STRING
-
-
-
 
 public class Pedido extends Base implements Calculable {
     private LocalDate fecha;
@@ -27,7 +17,7 @@ public class Pedido extends Base implements Calculable {
     public Pedido(FormaPago formaPago, Usuario usuario){
         super();
         setFecha(LocalDate.now());
-        setEstado(Estado.CANCELADO);            /////////////REVISAR
+        setEstado(Estado.CANCELADO);
         setTotal(0.0);
         setFormaPago(formaPago);
         setUsuario(usuario);
@@ -69,10 +59,10 @@ public class Pedido extends Base implements Calculable {
 
     public void validarPedido(){
         if (detallePedidos.isEmpty()){
-            setEstado(Estado.CANCELADO);         ////////////REVISAR
+            setEstado(Estado.CANCELADO);
             setTotal(0.0);
         } else {
-            setEstado(Estado.PENDIENTE);        ///////////////REVISAR
+            setEstado(Estado.PENDIENTE);
             calcularTotal();
         }
     }
@@ -104,7 +94,7 @@ public class Pedido extends Base implements Calculable {
 
 
     //SETTERAS
-    public void setFecha(LocalDate fecha) {         //CONSULTAR
+    public void setFecha(LocalDate fecha) {
         if(fecha != null){
             this.fecha = fecha;
         } else {
@@ -113,7 +103,7 @@ public class Pedido extends Base implements Calculable {
         }
     }
 
-    public void setEstado(Estado estado) {        //CONSULTAR
+    public void setEstado(Estado estado) {
         if(estado != null){
             this.estado = estado;
         } else {
@@ -122,7 +112,7 @@ public class Pedido extends Base implements Calculable {
         }
     }
 
-    public void setTotal(Double total) {           //CONSULTAR
+    public void setTotal(Double total) {
         if(total != null && total >= 0){
             this.total = total;
         } else {
@@ -131,7 +121,7 @@ public class Pedido extends Base implements Calculable {
         }
     }
 
-    public void setFormaPago(FormaPago formaPago) {       //CONSULTAR
+    public void setFormaPago(FormaPago formaPago) {
         if(formaPago != null){
             this.formaPago = formaPago;
         } else {
@@ -140,7 +130,7 @@ public class Pedido extends Base implements Calculable {
         }
     }
 
-    public void setUsuario(Usuario usuario) {        //CONSULTAR
+    public void setUsuario(Usuario usuario) {
         if(usuario != null){
             this.usuario = usuario;
 

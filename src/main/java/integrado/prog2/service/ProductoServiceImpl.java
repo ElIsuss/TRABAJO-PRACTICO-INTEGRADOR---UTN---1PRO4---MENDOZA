@@ -19,7 +19,7 @@ public class ProductoServiceImpl implements ProductoService {
         if (producto.getNombre() == null || producto.getNombre().trim().isEmpty()) {
             throw new RuntimeException("El nombre del producto no puede estar vacío.");
         }
-        if (producto.getPrecio() == null || producto.getPrecio() < 0) {
+        if (producto.getPrecio() == null || producto.getPrecio() <= 0){
             throw new RuntimeException("El precio del producto no puede ser negativo.");
         }
         if (producto.getStock() == null || producto.getStock() < 0) {
@@ -27,6 +27,9 @@ public class ProductoServiceImpl implements ProductoService {
         }
         if (producto.getCategoria() == null) {
             throw new RuntimeException("El producto debe estar asociado obligatoriamente a una categoría.");
+        }
+        if (producto.getDescripcion() == null || producto.getDescripcion().trim().isEmpty()) {
+            throw new RuntimeException("La descripción del producto no puede estar vacía.");
         }
 
         productoDAO.crear(producto);

@@ -1,7 +1,6 @@
 package integrado.prog2;
 
 import integrado.prog2.entities.MenuCRUDS;
-
 import java.util.Scanner;
 
 public class Main {

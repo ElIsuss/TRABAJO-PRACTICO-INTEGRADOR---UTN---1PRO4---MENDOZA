@@ -96,10 +96,10 @@ public class PedidoDAOImpl implements PedidoDAO {
             e.printStackTrace();
             throw new RuntimeException("Error al procesar el pedido de manera transaccional: " + e.getMessage());
         } finally {
-            // Siempre cerramos la conexión principal de forma segura al terminar
+            // cerramos la conexión principal de forma segura al terminar
             if (conn != null) {
                 try {
-                    conn.setAutoCommit(true); // Restauramos el comportamiento por defecto del pool
+                    conn.setAutoCommit(true);        // Restauramos el comportamiento por defecto del pool
                     conn.close();
                 } catch (SQLException e) {
                     e.printStackTrace();

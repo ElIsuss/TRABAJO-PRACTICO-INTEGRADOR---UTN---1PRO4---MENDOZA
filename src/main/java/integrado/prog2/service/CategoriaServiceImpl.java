@@ -4,6 +4,7 @@ import integrado.prog2.dao.CategoriaDAO;
 import integrado.prog2.dao.CategoriaDAOImpl;
 import integrado.prog2.entities.Categoria;
 import java.util.List;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 public class CategoriaServiceImpl implements CategoriaService {
 
@@ -19,13 +20,17 @@ public class CategoriaServiceImpl implements CategoriaService {
         if (categoria.getNombre() == null || categoria.getNombre().trim().isEmpty()) {
             throw new RuntimeException("El nombre de la categoría es obligatorio.");
         }
+        // 2. Validar que la descripcion no este vacia
+        if (categoria.getDescripcion() == null || categoria.getDescripcion().trim().isEmpty()) {
+            throw new RuntimeException("La descripción de la categoría es obligatoria.");
+        }
 
-        // 2. Validar que el nombre no exista ya (unicidad)
+        // 3. Validar que el nombre no exista ya (unicidad)
         if (categoriaDAO.existeNombre(categoria.getNombre())) {
             throw new RuntimeException("Ya existe una categoría con el nombre '" + categoria.getNombre() + "'.");
         }
 
-        // 3. Delegar la creación al DAO
+        // 4. Delegar la creación al DAO
         categoriaDAO.crear(categoria);
     }
 
@@ -68,14 +73,19 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     public void darDeBaja(Long id) {
-        // Verificar que la categoría existe antes de eliminarla
         buscarPorId(id);
 
-        // Si la categoría tiene productos activos, podrías agregar una validación aquí.
-        // Por ejemplo, si ProductoDAO tiene un método contarPorCategoria(id) > 0, 
-        // lanzarías una excepción. Pero eso es opcional según la regla de negocio.
-        
-        categoriaDAO.eliminar(id);
+        try {
+            categoriaDAO.eliminar(id);
+            System.out.println("Categoría eliminada correctamente.");
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof SQLIntegrityConstraintViolationException) {
+                throw new RuntimeException(
+                        "No se puede eliminar la categoría porque tiene productos asociados."
+                );
+            }
+            throw e;
+        }
     }
 
     @Override

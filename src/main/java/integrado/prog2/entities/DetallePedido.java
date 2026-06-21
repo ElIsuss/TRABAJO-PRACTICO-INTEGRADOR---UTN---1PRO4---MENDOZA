@@ -1,12 +1,7 @@
 package integrado.prog2.entities;
 
 import integrado.prog2.exception.ValidationException;
-
 import java.util.Objects;
-
-
-
-
 
 public class DetallePedido extends Base {
     private Integer cantidad;
@@ -47,20 +42,20 @@ public class DetallePedido extends Base {
     //SETTERS
     public void setCantidad(Integer cantidad) throws ValidationException {
         if (cantidad == null || cantidad <= 0){
-            throw new ValidationException("La cantidad debe ser mayor a 0");       //CONSULTAR
+            throw new ValidationException("La cantidad debe ser mayor a 0");
         }
         this.cantidad = cantidad;
     }
 
-    public void setSubtotal(Double subtotal) {                        //CONSULTAR
+    public void setSubtotal(Double subtotal) {
         this.subtotal = subtotal;
     }
 
-    public void setValido(Boolean valido) {                      //CONSULTAR
+    public void setValido(Boolean valido) {
         this.valido = valido;
     }
 
-    public void setProducto(Producto producto) {                   //CONSULTAR
+    public void setProducto(Producto producto) {
         this.producto = producto;
     }
 

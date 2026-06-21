@@ -1,7 +1,6 @@
 package integrado.prog2.entities;
 
 import integrado.prog2.enums.Rol;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,9 +36,7 @@ public class Usuario extends Base{
             if(pedido.getId().equals(id)){
                 return pedido;
             }
-
         }
-
         return null;
     }
 
@@ -56,7 +53,7 @@ public class Usuario extends Base{
 
     //SETTERS
     public void setId(Long id) {
-        this.id = id; // Como ahora el Id de Base es protected, Usuario lo puede modificar directamente así
+        this.id = id;          //Como ahora el Id de Base es protected, Usuario lo puede modificar directamente así
     }
 
     public void setNombre(String nombre) {                               //CONSULTAR

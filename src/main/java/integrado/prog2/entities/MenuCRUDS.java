@@ -144,8 +144,10 @@ public class MenuCRUDS {
                     System.out.println("No hay pedidos registrados.");
                 } else {
                     for (Pedido p : pedidos) {
+                        System.out.println("1");
+                        System.out.println("-----------------------------------------------------");
                         System.out.println(p);
-                        System.out.println("--------------------------------");
+                        System.out.println("-----------------------------------------------------");
                     }
                 }
             }
@@ -163,9 +165,9 @@ public class MenuCRUDS {
                 Categoria c = new Categoria(nombre, descripcion);
                 try {
                     categoriaService.guardarCategoria(c);
-                    System.out.println("✅ Categoría creada con ID: " + c.getId());
+                    System.out.println("Categoría creada con ID: " + c.getId());
                 } catch (RuntimeException e) {
-                    System.out.println("❌ Error: " + e.getMessage());
+                    System.out.println("Error: " + e.getMessage());
                 }
             }
             case 2 -> {
@@ -181,9 +183,9 @@ public class MenuCRUDS {
                     Categoria categoria = categoriaService.buscarPorId(idCat);
                     Producto p = new Producto(nombre, precio, descripcion, stock, imagen, categoria);
                     productoService.guardarProducto(p);
-                    System.out.println("✅ Producto creado con ID: " + p.getId());
+                    System.out.println("Producto creado con ID: " + p.getId());
                 } catch (RuntimeException e) {
-                    System.out.println("❌ Error: " + e.getMessage());
+                    System.out.println("Error: " + e.getMessage());
                 }
             }
             case 3 -> {
@@ -206,9 +208,9 @@ public class MenuCRUDS {
                 Usuario u = new Usuario(nombre, apellido, mail, celular, pass, rol);
                 try {
                     usuarioService.registrarUsuario(u);
-                    System.out.println("✅ Usuario creado con ID: " + u.getId());
+                    System.out.println("Usuario creado con ID: " + u.getId());
                 } catch (RuntimeException e) {
-                    System.out.println("❌ Error: " + e.getMessage());
+                    System.out.println("Error: " + e.getMessage());
                 }
             }
             case 4 -> {
@@ -223,7 +225,7 @@ public class MenuCRUDS {
                     try {
                         formaPago = FormaPago.valueOf(formaPagoStr.toUpperCase());
                     } catch (IllegalArgumentException e) {
-                        System.out.println("❌ Forma de pago inválida.");
+                        System.out.println("Forma de pago inválida.");
                         return;
                     }
 
@@ -238,18 +240,18 @@ public class MenuCRUDS {
                             Producto producto = productoService.buscarPorId(idProducto);
                             int cantidad = leerInt("Cantidad: ");
                             pedido.addDetallePedido(cantidad, producto);
-                            System.out.println("✅ Producto agregado al pedido.");
+                            System.out.println("Producto agregado al pedido.");
                         } catch (RuntimeException e) {
-                            System.out.println("❌ Error: " + e.getMessage());
+                            System.out.println("Error: " + e.getMessage());
                         }
                     }
 
                     // Guardar pedido con transacción
                     pedidoService.procesarPedido(pedido);
-                    System.out.println("✅ Pedido creado con ID: " + pedido.getId());
+                    System.out.println("Pedido creado con ID: " + pedido.getId());
 
                 } catch (RuntimeException e) {
-                    System.out.println("❌ Error: " + e.getMessage());
+                    System.out.println("Error: " + e.getMessage());
                 }
             }
         }
@@ -271,9 +273,9 @@ public class MenuCRUDS {
                     if (!nuevaDesc.isEmpty()) c.setDescripcion(nuevaDesc);
 
                     categoriaService.modificarCategoria(c);
-                    System.out.println("✅ Categoría actualizada.");
+                    System.out.println("Categoría actualizada.");
                 } catch (RuntimeException e) {
-                    System.out.println("❌ Error: " + e.getMessage());
+                    System.out.println("Error: " + e.getMessage());
                 }
             }
             case 2 -> {
@@ -310,9 +312,9 @@ public class MenuCRUDS {
                     }
 
                     productoService.modificarProducto(p);
-                    System.out.println("✅ Producto actualizado.");
+                    System.out.println("Producto actualizado.");
                 } catch (RuntimeException e) {
-                    System.out.println("❌ Error: " + e.getMessage());
+                    System.out.println("Error: " + e.getMessage());
                 }
             }
             case 3 -> {
@@ -351,9 +353,9 @@ public class MenuCRUDS {
                     }
 
                     usuarioService.modificarUsuario(u);
-                    System.out.println("✅ Usuario actualizado.");
+                    System.out.println("Usuario actualizado.");
                 } catch (RuntimeException e) {
-                    System.out.println("❌ Error: " + e.getMessage());
+                    System.out.println("Error: " + e.getMessage());
                 }
             }
             case 4 -> {
@@ -383,9 +385,9 @@ public class MenuCRUDS {
                     }
 
                     pedidoService.cambiarEstadoFormaPago(pedido);
-                    System.out.println("✅ Pedido actualizado.");
+                    System.out.println("Pedido actualizado.");
                 } catch (RuntimeException e) {
-                    System.out.println("❌ Error: " + e.getMessage());
+                    System.out.println("Error: " + e.getMessage());
                 }
             }
         }
@@ -404,33 +406,33 @@ public class MenuCRUDS {
             case 1 -> {
                 try {
                     categoriaService.darDeBaja(id);
-                    System.out.println("✅ Categoría eliminada lógicamente.");
+                    System.out.println("Categoría eliminada lógicamente.");
                 } catch (RuntimeException e) {
-                    System.out.println("❌ Error: " + e.getMessage());
+                    System.out.println("Error: " + e.getMessage());
                 }
             }
             case 2 -> {
                 try {
                     productoService.darDeBaja(id);
-                    System.out.println("✅ Producto eliminado lógicamente.");
+                    System.out.println("Producto eliminado lógicamente.");
                 } catch (RuntimeException e) {
-                    System.out.println("❌ Error: " + e.getMessage());
+                    System.out.println("Error: " + e.getMessage());
                 }
             }
             case 3 -> {
                 try {
                     usuarioService.darDeBaja(id);
-                    System.out.println("✅ Usuario eliminado lógicamente.");
+                    System.out.println("Usuario eliminado lógicamente.");
                 } catch (RuntimeException e) {
-                    System.out.println("❌ Error: " + e.getMessage());
+                    System.out.println("Error: " + e.getMessage());
                 }
             }
             case 4 -> {
                 try {
                     pedidoService.cancelarPedido(id);
-                    System.out.println("✅ Pedido eliminado lógicamente.");
+                    System.out.println("Pedido eliminado lógicamente.");
                 } catch (RuntimeException e) {
-                    System.out.println("❌ Error: " + e.getMessage());
+                    System.out.println("Error: " + e.getMessage());
                 }
             }
         }

@@ -5,6 +5,7 @@ import integrado.prog2.entities.Categoria;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 public class CategoriaDAOImpl implements CategoriaDAO {
 
@@ -80,9 +81,10 @@ public class CategoriaDAOImpl implements CategoriaDAO {
             pstmt.setLong(1, id);
             pstmt.executeUpdate();
 
+        }catch (SQLIntegrityConstraintViolationException e) {
+            throw new RuntimeException("No se puede eliminar la categoría porque tiene productos asociados.");
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error al eliminar la categoría: " + e.getMessage());
+            throw new RuntimeException("Error al eliminar la categoría.");
         }
     }
 
