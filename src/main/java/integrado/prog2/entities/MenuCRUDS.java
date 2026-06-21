@@ -1,9 +1,11 @@
 package integrado.prog2.entities;
 
 import integrado.prog2.dao.*;
-import integrado.prog2.entities.*;
+import integrado.prog2.enums.Estado;
+import integrado.prog2.enums.FormaPago;
 import integrado.prog2.enums.Rol;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class MenuCRUDS {
@@ -40,7 +42,7 @@ public class MenuCRUDS {
             System.out.println("0. Volver");
             System.out.print("Seleccione: ");
 
-            opcion = sc.nextInt();
+            opcion = Integer.parseInt(sc.nextLine());
 
             switch (opcion) {
 
@@ -81,6 +83,20 @@ public class MenuCRUDS {
                     System.out.println(u.getId() + " - " + u.getNombre() + " " + u.getApellido());
                 }
             }
+            case 4 -> {
+                System.out.println("\n--- PEDIDOS ---");
+
+                List<Pedido> pedidos = pedidoDAO.listarTodos();
+
+                if (pedidos.isEmpty()) {
+                    System.out.println("No hay pedidos registrados.");
+                } else {
+                    for (Pedido pedido : pedidos) {
+                        System.out.println(pedido);
+                        System.out.println("--------------------------------");
+                    }
+                }
+            }
         }
     }
 
@@ -94,10 +110,10 @@ public class MenuCRUDS {
 
                 //ponemos nombre y descripcion
                 System.out.print("Nombre: ");
-                String nombre = sc.next();
+                String nombre = sc.nextLine();
 
                 System.out.print("Descripción: ");
-                String descripcion = sc.next();
+                String descripcion = sc.nextLine();
 
                 //creamos categoria
                 Categoria c = new Categoria(nombre,descripcion);
@@ -113,22 +129,22 @@ public class MenuCRUDS {
 
                 //ponemos los valores
                 System.out.print("Nombre: ");
-                String nombre = sc.next();
+                String nombre = sc.nextLine();
 
                 System.out.print("Precio: ");
-                double precio = sc.nextDouble();
+                double precio = Double.parseDouble(sc.nextLine());
 
                 System.out.print("Descripción: ");
-                String descripcion = sc.next();
+                String descripcion = sc.nextLine();
 
                 System.out.print("Stock: ");
-                int stock = sc.nextInt();
+                int stock = Integer.parseInt(sc.nextLine());
 
                 System.out.print("Imagen: ");
                 String imagen = sc.next();
 
                 System.out.print("ID de categoría: ");
-                Long idCat = sc.nextLong();
+                Long idCat = Long.parseLong(sc.nextLine());
 
                 Categoria categoria = categoriaDAO.leer(idCat);
 
@@ -151,13 +167,13 @@ public class MenuCRUDS {
 
                 //parametros
                 System.out.print("Nombre: ");
-                String nombre = sc.next();
+                String nombre = sc.nextLine();
 
                 System.out.print("Apellido: ");
-                String apellido = sc.next();
+                String apellido = sc.nextLine();
 
                 System.out.print("Email: ");
-                String mail = sc.next();
+                String mail = sc.nextLine();
 
                 System.out.print("Celular: ");
                 String celular = sc.next();
@@ -166,7 +182,7 @@ public class MenuCRUDS {
                 String pass = sc.next();
 
                 System.out.print("Rol (ADMIN / USUARIO): ");
-                String rolStr = sc.next();
+                String rolStr = sc.nextLine();
 
                 Rol rol;
 
@@ -184,6 +200,71 @@ public class MenuCRUDS {
 
                 System.out.println("Usuario creado con ID: " + u.getId());
             }
+
+            case 4 -> {
+                System.out.println("\n--- CREAR PEDIDO ---");
+
+                System.out.print("ID Usuario: ");
+                Long idUsuario = sc.nextLong();
+
+                Usuario usuario = usuarioDAO.leer(idUsuario);
+
+                if (usuario == null) {
+                    System.out.println("Usuario no encontrado.");
+                    return;
+                }
+
+                System.out.print("Forma de pago (EFECTIVO / TARJETA / TRANSFERENCIA): ");
+                String formaPagoStr = sc.nextLine();
+
+                FormaPago formaPago;
+
+                try {
+                    formaPago = FormaPago.valueOf(formaPagoStr.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Forma de pago inválida.");
+                    return;
+                }
+
+                Pedido pedido = new Pedido(formaPago, usuario);
+
+                // =========================
+                // AGREGAR PRODUCTOS AL PEDIDO
+                // =========================
+
+                while (true) {
+
+                    System.out.print("\nID Producto (0 para terminar): ");
+                    Long idProducto = Long.parseLong(sc.nextLine());
+
+                    if (idProducto == 0) break;
+
+                    Producto producto = productoDAO.leer(idProducto);
+
+                    if (producto == null) {
+                        System.out.println("Producto no encontrado.");
+                        continue;
+                    }
+
+                    System.out.print("Cantidad: ");
+                    int cantidad = Integer.parseInt(sc.nextLine());
+
+                    try {
+                        pedido.addDetallePedido(cantidad, producto);
+                        System.out.println("Producto agregado al pedido.");
+                    } catch (Exception e) {
+                        System.out.println("Error al agregar producto: " + e.getMessage());
+                    }
+                }
+
+                // =========================
+                // GUARDAR PEDIDO
+                // =========================
+
+                pedidoDAO.crear(pedido);
+
+                System.out.println("Pedido creado con ID: " + pedido.getId());
+            }
         }
     }
 
@@ -194,7 +275,7 @@ public class MenuCRUDS {
 
             case 1 -> {
                 System.out.print("ID categoría: ");
-                Long id = sc.nextLong();
+                Long id = Long.parseLong(sc.nextLine());
 
                 Categoria c = categoriaDAO.leer(id);
 
@@ -214,7 +295,7 @@ public class MenuCRUDS {
 
             case 2 -> {
                 System.out.print("ID producto: ");
-                Long id = sc.nextLong();
+                Long id = Long.parseLong(sc.nextLine());
 
                 Producto p = productoDAO.leer(id);
 
@@ -234,7 +315,7 @@ public class MenuCRUDS {
 
             case 3 -> {
                 System.out.print("ID usuario: ");
-                Long id = sc.nextLong();
+                Long id = Long.parseLong(sc.nextLine());
 
                 Usuario u = usuarioDAO.leer(id);
 
@@ -251,6 +332,31 @@ public class MenuCRUDS {
                     System.out.println("No existe.");
                 }
             }
+
+            case 4 -> {
+                System.out.print("ID pedido: ");
+                Long id = Long.parseLong(sc.nextLine());
+
+                Pedido pedido = pedidoDAO.leer(id);
+
+                if (pedido == null) {
+                    System.out.println("Pedido no encontrado.");
+                    return;
+                }
+
+                System.out.print("Nuevo estado (PENDIENTE / CONFIRMADO / TERMINADO / CANCELADO): ");
+                Estado estado = Estado.valueOf(sc.next().toUpperCase());
+
+                System.out.print("Nueva forma de pago (EFECTIVO / TARJETA / TRANSFERENCIA): ");
+                FormaPago formaPago = FormaPago.valueOf(sc.next().toUpperCase());
+
+                pedido.setEstado(estado);
+                pedido.setFormaPago(formaPago);
+
+                pedidoDAO.actualizarEstadoFormaPago(pedido);
+
+                System.out.println("Pedido actualizado.");
+            }
         }
     }
 
@@ -258,13 +364,14 @@ public class MenuCRUDS {
     private void eliminar(int modulo) {
 
         System.out.print("ID a eliminar: ");
-        Long id = sc.nextLong();
+        Long id = Long.parseLong(sc.nextLine());
 
         switch (modulo) {
 
             case 1 -> categoriaDAO.eliminar(id);
             case 2 -> productoDAO.eliminar(id);
             case 3 -> usuarioDAO.eliminar(id);
+            case 4 -> pedidoDAO.eliminar(id);
         }
 
         System.out.println("Eliminación realizada.");

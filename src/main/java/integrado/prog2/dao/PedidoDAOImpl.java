@@ -3,6 +3,8 @@ package integrado.prog2.dao;
 import integrado.prog2.config.DatabaseConnectionPool;
 import integrado.prog2.entities.DetallePedido;
 import integrado.prog2.entities.Pedido;
+import integrado.prog2.entities.Producto;
+import integrado.prog2.entities.Usuario;
 import integrado.prog2.enums.Estado;
 import integrado.prog2.enums.FormaPago;
 
@@ -17,7 +19,7 @@ public class PedidoDAOImpl implements PedidoDAO {
         // 1. Nos aseguramos de calcular el total del pedido antes de guardarlo
         pedido.calcularTotal();
 
-        String sqlPedido = "INSERT INTO pedidos (fecha_pedido, total, estado, forma_pago, id_usuario) VALUES (?, ?, ?, ?, ?)";
+        String sqlPedido = "INSERT INTO pedidos (fecha, total, estado, forma_pago, id_usuario) VALUES (?, ?, ?, ?, ?)";
         String sqlDetalle = "INSERT INTO detalles_pedido (cantidad, subtotal, id_pedido, id_producto) VALUES (?, ?, ?, ?)";
         String sqlStock = "UPDATE productos SET stock = stock - ? WHERE id = ? AND stock >= ?";
 
@@ -108,7 +110,42 @@ public class PedidoDAOImpl implements PedidoDAO {
 
     @Override
     public Pedido leer(Long id) {
-        // En un paso siguiente podemos armar las consultas de lectura si querés probarlo completo
+
+        String sql = """
+        SELECT id, fecha, estado, total, forma_pago, id_usuario
+        FROM pedidos
+        WHERE id = ? AND eliminado = false
+        """;
+
+        try (Connection conn = DatabaseConnectionPool.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+
+                if (rs.next()) {
+
+                    Usuario usuario = new UsuarioDAOImpl().leer(rs.getLong("id_usuario"));
+
+                    Pedido pedido = new Pedido(
+                            FormaPago.valueOf(rs.getString("forma_pago")),
+                            usuario
+                    );
+
+                    pedido.setId(rs.getLong("id"));
+                    pedido.setFecha(rs.getDate("fecha").toLocalDate());
+                    pedido.setEstado(Estado.valueOf(rs.getString("estado")));
+                    pedido.setTotal(rs.getDouble("total"));
+
+                    return pedido;
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al leer pedido", e);
+        }
+
         return null;
     }
 
@@ -147,6 +184,89 @@ public class PedidoDAOImpl implements PedidoDAO {
 
     @Override
     public List<Pedido> listarTodos() {
-        return new ArrayList<>();
+
+        List<Pedido> pedidos = new ArrayList<>();
+
+        String sql = """
+        SELECT id, fecha, estado, total, forma_pago, id_usuario
+        FROM pedidos
+        WHERE eliminado = false
+        """;
+
+        try (Connection conn = DatabaseConnectionPool.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            UsuarioDAO usuarioDAO = new UsuarioDAOImpl();
+
+            while (rs.next()) {
+
+                Long idUsuario = rs.getLong("id_usuario");
+                Usuario usuario = usuarioDAO.leer(idUsuario);
+
+                if (usuario == null) continue;
+
+                Pedido pedido = new Pedido(
+                        FormaPago.valueOf(rs.getString("forma_pago")),
+                        usuario
+
+                );
+
+                pedido.setId(rs.getLong("id"));
+                pedido.setFecha(rs.getDate("fecha").toLocalDate());
+                pedido.setEstado(Estado.valueOf(rs.getString("estado")));
+                pedido.setTotal(rs.getDouble("total"));
+
+                pedidos.add(pedido);
+                List<DetallePedido> detalles = listarDetallesPorPedido(pedido.getId());
+                pedido.getDetallesPedidos().addAll(detalles);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al listar pedidos: " + e.getMessage());
+        }
+
+        return pedidos;
     }
-}
+    private List<DetallePedido> listarDetallesPorPedido(Long idPedido) {
+
+        List<DetallePedido> detalles = new ArrayList<>();
+
+        String sql = """
+        SELECT cantidad, subtotal, id_producto
+        FROM detalles_pedido
+        WHERE id_pedido = ?
+    """;
+
+        try (Connection conn = DatabaseConnectionPool.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, idPedido);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+
+                ProductoDAO productoDAO = new ProductoDAOImpl();
+
+                while (rs.next()) {
+
+                    Producto producto = productoDAO.leer(rs.getLong("id_producto"));
+
+                    DetallePedido detalle = new DetallePedido(
+                            rs.getInt("cantidad"),
+                            producto
+                    );
+
+                    detalle.setSubtotal(rs.getDouble("subtotal"));
+
+                    detalles.add(detalle);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al listar detalles", e);
+        }
+
+        return detalles;
+    }
+    }
