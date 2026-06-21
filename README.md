@@ -2,7 +2,7 @@ TRABAJO PRACTICO INTEGRADO "FOOD STORE - SISTEMA DE GESTION DE PEDIDOS CON COMID
 
 Aplicación desarrollada en Java con Maven, basada en arquitectura en capas (DAO, Service, Entities),
 que implementa operaciones CRUD con validaciones de negocio y persistencia de datos. 
-El es un sistema de pedidos con:
+Es un sistema de pedidos con:
 °Categorias
 °Usuarios
 °Productos
